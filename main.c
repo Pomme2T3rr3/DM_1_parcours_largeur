@@ -108,6 +108,95 @@ Noeud* alloue_noeud(int val, Arbre fg, Arbre fd) {
 }
 
 
+void libere_arbre(Arbre a) {
+    if (!a) return;
+    libere_arbre(a->fg);
+    libere_arbre(a->fd);
+    free(a);
+}
+
+
+int construit_complet(int h, Arbre* a) {
+    if (h < 0) return 0;
+
+    File f = initialisation();
+    if (!f) return 0;
+
+    // Créer la racine avec valeur 1
+    Noeud* racine = alloue_noeud(1, NULL, NULL);
+    if (!racine) {
+        free(f);
+        return 0;
+    }
+
+    *a = racine;
+
+    // Enfiler la racine
+    if (!enfiler(f, racine)) {
+        free(racine);
+        free(f);
+        return 0;
+    }
+
+    int valeur = 2; // Prochaine valeur
+    int niveau = 0;  // Niveau actuel
+
+    // Parcours en largeur
+    while (!est_vide(f) && niveau < h) {
+        int noeud_au_niveau = 1 << niveau;
+
+        for (int i = 0; i < noeud_au_niveau && !est_vide(f); i++) {
+            Cellule* cellule = extrait_tete(&f->debut);
+            if (!cellule) break;
+
+            Noeud* parent = cellule->noeud;
+            f->taille--;
+            free(cellule);
+
+            // Créer enfant gauche
+            Noeud* fg = alloue_noeud(valeur++, NULL, NULL);
+            if (!fg) {
+                free(f);
+                libere_arbre(*a);
+                *a = NULL;
+                return 0;
+            }
+            parent->fg = fg;
+
+            if (!enfiler(f, fg)) {
+                free(f);
+                libere_arbre(*a);
+                *a = NULL;
+                return 0;
+            }
+
+            // Créer enfant droit
+            Noeud* fd = alloue_noeud(valeur++, NULL, NULL);
+            if (!fd) {
+                free(f);
+                libere_arbre(*a);
+                *a = NULL;
+                return 0;
+            }
+            parent->fd = fd;
+
+            if (!enfiler(f, fd)) {
+                free(f);
+                libere_arbre(*a);
+                *a = NULL;
+                return 0;
+            }
+        }
+
+        niveau++;
+    }
+
+    free(f);
+    return 1;
+}
+
+
+
 int main (void) {
     Arbre racine = alloue_noeud(1, NULL, NULL);
     Arbre fg = alloue_noeud(2, NULL, NULL);
