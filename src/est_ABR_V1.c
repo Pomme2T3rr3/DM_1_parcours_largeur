@@ -278,7 +278,7 @@ int puissance2(int k){
     for(int i = 0; i < k; i++){
         res = res * 2;
     }
-    return res; 
+    return res;
 }
 // car dans un arbre presque complet, le nb de noeuds double à chaque niveau. n²
 
@@ -294,18 +294,18 @@ int nb_noeuds_gauche(int n){
     int reste = n - total;
 
     int max_gauche = puissance2(h - 1);
-    
+
     if(reste > max_gauche){            //on remplit à gauche d'abord
         reste = max_gauche;
     }                                  //on retourne le total de noeuds à gauche
-    return (puissance2(h - 1) - 1) + reste;  
+    return (puissance2(h - 1) - 1) + reste;
 }
 
 
 
 
 void parcours_infixe_2_prefixe_presque_complet(int * prefixe, int * infixe, int n){
-    if(n <= 0) return; 
+    if(n <= 0) return;
 
     int g = nb_noeuds_gauche(n);
 
@@ -339,5 +339,20 @@ void parcours_infixe_2_prefixe_filiforme_aleatoire(int * prefixe, int * infixe, 
 }
 
 
+void parcours_infixe_2_prefixe_quelconque_aleatoire(int *codage, int *infixe, int n) {
+    if (n <= 0) {
+        codage[0] = -1;   // sous-arbre vide
+        return;
+    }
 
+    // Choisit aléatoirement l'index de la racine dans le tableau infixe
+    int g = rand() % n;
 
+    codage[0] = infixe[g];   // la racine en préfixe
+
+    // Sous-arbre gauche
+    parcours_infixe_2_prefixe_quelconque_aleatoire(codage + 1, infixe, g);
+
+    // Sous-arbre droit
+    parcours_infixe_2_prefixe_quelconque_aleatoire(codage + 1 + (2*g+1), infixe + g + 1, n-1-g);
+}
