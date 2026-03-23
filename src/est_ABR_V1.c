@@ -227,3 +227,117 @@ int est_abr_infixe_visites(Arbre a, long long *nb_visites) {
     *nb_visites = 0;
     return infixe_croissant_visites(a, &dernier_noeud, nb_visites);
 }
+
+
+
+
+
+
+//partie 2)
+
+
+int construit_quelconque(Arbre * a, int ** codage, int n){
+    if(**codage == -1){      //vide
+        *a = NULL;
+        (*codage)++;         //on avance
+        return 1;
+    }
+
+    *a = malloc(sizeof(Noeud));  //alloue le noeud puis on regarde si ça échoue
+    if(!(*a)){
+        *a = NULL;
+        return 0;
+    }
+
+    (*a)->valeur =(**codage);   //initialise le noeud
+    (*codage)++;
+
+    if(!construit_quelconque(&((*a)->fg), codage, n)){   //sous arbre gauche
+        free(*a);
+        *a = NULL;
+        return 0;
+    }
+
+    if(construit_quelconque((&(*a)->fd), codage, n)){    //sous arbre droit
+        libere_arbre((*a)->fg);
+        free(*a);
+        *a = NULL;
+        return 0;
+    }
+
+    return 1;
+
+}
+
+
+
+
+
+int puissance2(int k){
+    int res = 1;
+    for(int i = 0; i < k; i++){
+        res = res * 2;
+    }
+    return res; 
+}
+// car dans un arbre presque complet, le nb de noeuds double à chaque niveau. n²
+
+int nb_noeuds_gauche(int n){
+    if(n <= 1) return 0;
+
+    int h = 0;
+    while((puissance2(h + 1)) <= n){    //on trouve combien de niveau sont remplis (le +grand h)
+        h++;
+    }
+
+    int total = puissance2(h) - 1;     //calcul ce qui reste
+    int reste = n - total;
+
+    int max_gauche = puissance2(h - 1);
+    
+    if(reste > max_gauche){            //on remplit à gauche d'abord
+        reste = max_gauche;
+    }                                  //on retourne le total de noeuds à gauche
+    return (puissance2(h - 1) - 1) + reste;  
+}
+
+
+
+
+void parcours_infixe_2_prefixe_presque_complet(int * prefixe, int * infixe, int n){
+    if(n <= 0) return; 
+
+    int g = nb_noeuds_gauche(n);
+
+    prefixe[0] = infixe[g];
+
+    parcours_infixe_2_prefixe_presque_complet(prefixe +1, infixe, g);
+
+    parcours_infixe_2_prefixe_presque_complet(prefixe + 1 + g, infixe + g + 1, n - g -1);
+}
+
+
+
+
+void parcours_infixe_2_prefixe_filiforme_aleatoire(int * prefixe, int * infixe, int n){
+    if(n <= 0) return;
+
+    if(n == 1){
+        prefixe[0] = infixe[0];
+        return;
+    }
+
+    int choix = rand() % 2;
+
+    if(choix == 0){  //gauche
+        prefixe[0] = infixe[n - 1];
+        parcours_infixe_2_prefixe_filiforme_aleatoire(prefixe + 1, infixe, n - 1);
+    }else{          //droite
+        prefixe[0] = infixe[0];
+        parcours_infixe_2_prefixe_filiforme_aleatoire(prefixe + 1, infixe + 1, n - 1);
+    }
+}
+
+
+
+
