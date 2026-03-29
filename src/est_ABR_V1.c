@@ -16,6 +16,7 @@ int abr_max(Arbre a) {
 }
 
 
+
 Noeud *alloue_noeud(int valeur, Arbre fg, Arbre fd) {
     Noeud *new = malloc(sizeof(Noeud));
     if (!new) return NULL;
@@ -234,31 +235,31 @@ int est_abr_infixe_visites(Arbre a, long long *nb_visites) {
 
 
 //partie 2)
+int construit_quelconque(Arbre *a, int **codage, int n){
+    (void)n;
 
-
-int construit_quelconque(Arbre * a, int ** codage, int n){
-    if(**codage == -1){      //vide
+    if (**codage == -1) {
         *a = NULL;
-        (*codage)++;         //on avance
+        (*codage)++;
         return 1;
     }
 
-    *a = malloc(sizeof(Noeud));  //alloue le noeud puis on regarde si ça échoue
-    if(!(*a)){
+    *a = malloc(sizeof(Noeud));
+    if (!(*a)) {
         *a = NULL;
         return 0;
     }
 
-    (*a)->valeur =(**codage);   //initialise le noeud
+    (*a)->valeur = **codage;
     (*codage)++;
 
-    if(!construit_quelconque(&((*a)->fg), codage, n)){   //sous arbre gauche
+    if (!construit_quelconque(&((*a)->fg), codage, n)) {
         free(*a);
         *a = NULL;
         return 0;
     }
 
-    if(construit_quelconque((&(*a)->fd), codage, n)){    //sous arbre droit
+    if (!construit_quelconque(&((*a)->fd), codage, n)) {
         libere_arbre((*a)->fg);
         free(*a);
         *a = NULL;
@@ -266,9 +267,7 @@ int construit_quelconque(Arbre * a, int ** codage, int n){
     }
 
     return 1;
-
 }
-
 
 
 
@@ -386,25 +385,30 @@ static int filiforme_infixe_vers_codage_alea(int *codage, int *infixe, int n){
     }
 }
 
-int ABR_filiforme_alea(Arbre * a, int taille){
-    if(taille < 0) return 0;
 
-    if(taille == 0) {
+
+
+
+
+int ABR_filiforme_alea(Arbre *a, int taille){
+    if (taille < 0) return 0;
+
+    if (taille == 0) {
         *a = NULL;
         return 1;
     }
 
     int *infixe = malloc(taille * sizeof(int));
-    if(!infixe) return 0;
+    if (!infixe) return 0;
 
-    int *codage = malloc((2 *taille + 1) * sizeof(int));
-    if(!codage) {
+    int *codage = malloc((2 * taille + 1) * sizeof(int));
+    if (!codage) {
         free(infixe);
         return 0;
     }
 
-    /*infixe trié => ABR*/
-    for (int i = 0; i < taille; i++){
+/* infixe trié => arbre binaire de recherche */
+    for (int i = 0; i < taille; i++) {
         infixe[i] = i + 1;
     }
 
@@ -418,6 +422,7 @@ int ABR_filiforme_alea(Arbre * a, int taille){
 
     return tmp;
 }
+
 
 
 
@@ -661,3 +666,4 @@ int non_ABR_quelconque_alea(Arbre *a, int taille) {
 
     return tmp;
 }
+
