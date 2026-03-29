@@ -4,13 +4,13 @@ SRCDIR = src
 OBJDIR = obj
 BINDIR = bin
 
-# Test executable
+# Test executable (verification functions)
 TEST_EXECUTABLE = $(BINDIR)/test_est_ABR
 TEST_OBJECTS = $(OBJDIR)/est_ABR.o $(OBJDIR)/test_est_ABR.o
 
-# Main executable (CSV generation)
+# Main executable (verification + generation)
 MAIN_EXECUTABLE = $(BINDIR)/main
-MAIN_OBJECTS = $(OBJDIR)/est_ABR_V1.o $(OBJDIR)/main.o
+MAIN_OBJECTS = $(OBJDIR)/est_ABR.o $(OBJDIR)/genere_arbre_binaire.o $(OBJDIR)/main.o
 
 # Default target
 all: $(TEST_EXECUTABLE) $(MAIN_EXECUTABLE)
